@@ -8,6 +8,7 @@
 
 #import "UIButton+WebCache.h"
 #import "objc/runtime.h"
+#import "UIImage+Resize.h"
 
 static char operationKey;
 
@@ -21,6 +22,10 @@ static char operationKey;
 - (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder
 {
     [self setImageWithURL:url forState:state placeholderImage:placeholder options:0 completed:nil];
+}
+
+- (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder resize:(CGSize)dstSize {
+    [self setImageWithURL:url forState:state placeholderImage:placeholder resize:dstSize options:0 completed:nil];
 }
 
 - (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options
@@ -39,6 +44,11 @@ static char operationKey;
 
 - (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options completed:(SDWebImageCompletedBlock)completedBlock
 {
+    [self setImageWithURL:url forState:state placeholderImage:placeholder resize:CGSizeZero options:options completed:completedBlock];
+}
+
+- (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder resize:(CGSize)dstSize options:(SDWebImageOptions)options completed:(SDWebImageCompletedBlock)completedBlock
+{
     [self cancelCurrentImageLoad];
 
     [self setImage:placeholder forState:state];
@@ -53,13 +63,15 @@ static char operationKey;
             {
                 __strong UIButton *sself = wself;
                 if (!sself) return;
+                UIImage *resultImage;
                 if (image)
                 {
+                    resultImage = CGSizeEqualToSize(dstSize, CGSizeZero) ? image : [image resizedImageToSize:dstSize];
                     [sself setImage:image forState:state];
                 }
                 if (completedBlock && finished)
                 {
-                    completedBlock(image, error, cacheType);
+                    completedBlock(resultImage, error, cacheType);
                 }
             };
             if ([NSThread isMainThread])

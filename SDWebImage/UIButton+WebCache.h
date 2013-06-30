@@ -35,6 +35,7 @@
  * @see setImageWithURL:placeholderImage:options:
  */
 - (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder;
+- (void)setImageWithURL:(NSURL *)url forState:(UIControlState)state placeholderImage:(UIImage *)placeholder resize:(CGSize)dstSize;
 
 /**
  * Set the imageView `image` with an `url`, placeholder and custom options.

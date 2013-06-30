@@ -8,6 +8,7 @@
 
 #import "UIImageView+WebCache.h"
 #import "objc/runtime.h"
+#import "UIImage+Resize.h"
 
 static char operationKey;
 
@@ -21,6 +22,10 @@ static char operationKey;
 - (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder
 {
     [self setImageWithURL:url placeholderImage:placeholder options:0 progress:nil completed:nil];
+}
+
+- (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder resize:(CGSize)dstSize {
+    [self setImageWithURL:url placeholderImage:placeholder resize:dstSize options:0 progress:nil completed:nil];
 }
 
 - (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options
@@ -45,6 +50,10 @@ static char operationKey;
 
 - (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedBlock)completedBlock
 {
+    [self setImageWithURL:url placeholderImage:placeholder resize:CGSizeZero options:options progress:progressBlock completed:completedBlock];
+}
+
+- (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder resize:(CGSize)dstSize options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedBlock)completedBlock {
     [self cancelCurrentImageLoad];
 
     self.image = placeholder;
@@ -59,14 +68,16 @@ static char operationKey;
             {
                 __strong UIImageView *sself = wself;
                 if (!sself) return;
+                UIImage *resultImage;
                 if (image)
                 {
-                    sself.image = image;
+                    resultImage = CGSizeEqualToSize(dstSize, CGSizeZero) ? image : [image resizedImageToSize:dstSize];
+                    sself.image = resultImage;
                     [sself setNeedsLayout];
                 }
                 if (completedBlock && finished)
                 {
-                    completedBlock(image, error, cacheType);
+                    completedBlock(resultImage, error, cacheType);
                 }
             };
             if ([NSThread isMainThread])
