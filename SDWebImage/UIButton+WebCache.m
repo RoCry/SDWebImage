@@ -67,7 +67,7 @@ static char operationKey;
                 if (image)
                 {
                     resultImage = CGSizeEqualToSize(dstSize, CGSizeZero) ? image : [image resizedImageToSize:dstSize];
-                    [sself setImage:image forState:state];
+                    [sself setImage:resultImage forState:state];
                 }
                 if (completedBlock && finished)
                 {
