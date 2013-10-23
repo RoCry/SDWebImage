@@ -67,14 +67,13 @@ static char operationArrayKey;
             if (!wself) return;
             dispatch_main_sync_safe(^
             {
-                __strong UIImageView *sself = wself;
-                if (!sself) return;
+                if (!wself) return;
                 UIImage *resultImage;
                 if (image)
                 {
                     resultImage = CGSizeEqualToSize(dstSize, CGSizeZero) ? image : [image resizedImageToSize:dstSize];
-                    sself.image = resultImage;
-                    [sself setNeedsLayout];
+                    wself.image = resultImage;
+                    [wself setNeedsLayout];
                 }
                 if (completedBlock && finished)
                 {
